@@ -53,8 +53,8 @@ and make them available as envirnoment variables.
 ```
 Usage: envwarden [--help] [--dotenv] [--search]
 
-To export environment variables, use: \`eval \$(envwarden)\`
-To create an .env file, use: \`envwarden --dotenv > .env\`
+To export environment variables, use: `eval $(envwarden)`
+To create an .env file, use: `envwarden --dotenv > .env`
 
 Options:
     -h --help
