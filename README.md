@@ -59,7 +59,7 @@ To create an .env file, use: `envwarden --dotenv > .env`
 Options:
     -h --help
     -d --dotenv (optional) outputs to stdout in .env format
-    -s --search <keyword> (optional) define the search term for bitwarden items (defaults to $SEARCH)
+    -s --search <keyword> (optional) define the search term for bitwarden items (defaults to 'envwarden')
 
 You can use ~/.envwarden to store your credentials (just email, or email:password)
 ```
