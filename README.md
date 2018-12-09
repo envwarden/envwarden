@@ -1,7 +1,7 @@
 ![](https://raw.githubusercontent.com/envwarden/envwarden/master/assets/icon-left-font-narrow.png "envwarden")
 
 # ${envwarden}
-Manage your server secrets with Bitwarden
+Manage your server secrets with [Bitwarden](https://bitwarden.com/)
 
 ## How?
 
