@@ -36,10 +36,11 @@ and make them available as envirnoment variables.
   You might want to define the name based on your server or environment
   (e.g. `staging`, `development`, `production`)
 * Add custom fields for each secure environment variable you need
-  (fields can be either text or hidden)
+  (fields can be text, hidden or boolean)
 * You can add as many fields as you need, and you can also create
   multiple items, as long as they match the same search term
   (their secrets would be combined)
+* You can also copy attachments on the searched items to a destination folder
 * You should use separate logins for each environment, and ideally limit server
   access to only the secrets it needs, but it's up to you how to manage it
 
@@ -51,15 +52,16 @@ and make them available as envirnoment variables.
 * Alternatively, you can output your secrets into an `.env` file using `envwarden --dotenv`
 
 ```
-Usage: envwarden [--help] [--dotenv] [--search]
+Usage: envwarden [--help] [--search] [--dotenv] [--copy]
 
 To export environment variables, use: `eval $(envwarden)`
 To create an .env file, use: `envwarden --dotenv > .env`
 
 Options:
     -h --help
-    -d --dotenv (optional) outputs to stdout in .env format
     -s --search <keyword> (optional) define the search term for bitwarden items (defaults to 'envwarden')
+    -d --dotenv (optional) outputs to stdout in .env format
+    -c --copy <destination folder> (optional) copies all attachments on the item to a folder
 
 You can use ~/.envwarden to store your credentials (just email, or email:password)
 ```

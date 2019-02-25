@@ -12,15 +12,16 @@ usage()
     echo "Then it goes through all custom fields on every item found"
     echo "and make them available as envirnoment variables."
     echo ""
-    echo "Usage: envwarden [--help] [--dotenv] [--search]"
+    echo "Usage: envwarden [--help] [--search] [--dotenv] [--copy]"
     echo ""
     echo "To export environment variables, use: \`eval \$(envwarden)\`"
     echo "To create an .env file, use: \`envwarden --dotenv > .env\`"
     echo ""
     echo "Options:"
     echo -e "\t-h --help"
-    echo -e "\t-d --dotenv (optional) outputs to stdout in .env format"
     echo -e "\t-s --search <keyword> (optional) define the search term for bitwarden items (defaults to $SEARCH)"
+    echo -e "\t-d --dotenv (optional) outputs secrets to stdout in .env format"
+    echo -e "\t-c --copy <destination folder> (optional) copies all attachments on the item to a folder"
     echo ""
     echo "You can use ~/.envwarden to store your credentials (just email, or email:password)"
 }
@@ -37,6 +38,11 @@ while [[ $# > 0 ]]; do
             ;;
         -s | --search)
             SEARCH=$2
+            shift
+            ;;
+        -c | --copy)
+            COPY_TO=$2
+            COPY_TO=${COPY_TO:=.}
             shift
             ;;
         *)
@@ -74,3 +80,13 @@ while read -r key; do
         echo export \'$quoted_key\'=\'$quoted_value\'
     fi
 done < <(bw list items --search "$SEARCH" |jq -r '.[].fields[] | select(.name != null) | select(.value != null) | .name, .value')
+
+if [[ -n "$COPY_TO" ]]; then
+    item_id=$(bw list items --search "$SEARCH" |jq -r '.[].id')
+    if [[ -n "$item_id" ]]; then
+        while read -r attachment_id; do
+            read -r filename
+            bw get attachment $attachment_id --itemid $item_id --output "$COPY_TO/$filename" 1>&2
+        done < <(bw list items --search "$SEARCH" |jq -r '.[].attachments[] | .id, .fileName')
+    fi
+fi
