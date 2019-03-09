@@ -26,15 +26,6 @@ usage()
     echo "You can use ~/.envwarden to store your credentials (just email, or email:password)"
 }
 
-check_version()
-{
-    printf '%s\n%s' $2 $3 | sort -C -V
-    if [ $? == 0 ]; then
-        (>&2 echo "$1 $2 found, version $3 or higher is needed")
-        exit 1
-    fi
-}
-
 while [[ $# > 0 ]]; do
     key="$1"
     case $key in
@@ -62,17 +53,6 @@ while [[ $# > 0 ]]; do
     esac
     shift
 done
-
-which jq > /dev/null 2>&1
-
-if [ $? != 0 ]; then
-  (>&2 echo "jq command not found" )
-  exit 1
-fi
-
-JQ_VERSION=`jq --version 2>&1 | cut -f3 -d" "`
-
-check_version "jq" "$JQ_VERSION" "1.6"
 
 if [[ -f $HOME/.envwarden ]]; then
     IFS=':' read -r bw_login bw_password <<< `cat $HOME/.envwarden`

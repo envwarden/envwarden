@@ -18,7 +18,7 @@ and make them available as envirnoment variables.
   (e.g. `wget https://raw.githubusercontent.com/envwarden/envwarden/master/envwarden`)
 * `chmod +x envwarden && sudo cp envwarden /usr/local/bin` to make it executable and reachable
 * Download and install the [bw CLI](https://github.com/bitwarden/cli#downloadinstall) and
-  [jq](https://stedolan.github.io/jq/download/)
+  [jq](https://stedolan.github.io/jq/download/) version 1.6 and above!
 
 ### With Docker
 
