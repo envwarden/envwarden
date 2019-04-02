@@ -61,6 +61,7 @@ Options:
     -h --help
     -s --search <keyword> (optional) define the search term for bitwarden items (defaults to 'envwarden')
     -d --dotenv (optional) outputs to stdout in .env format
+    -k --dotenv-docker (optional) outputs secrets to stdout in a "docker-friendly" .env format (no quotes)
     -c --copy <destination folder> (optional) copies all attachments on the item to a folder
 
 You can use ~/.envwarden to store your credentials (just email, or email:password)

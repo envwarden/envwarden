@@ -21,6 +21,7 @@ usage()
     echo -e "\t-h --help"
     echo -e "\t-s --search <keyword> (optional) define the search term for bitwarden items (defaults to $SEARCH)"
     echo -e "\t-d --dotenv (optional) outputs secrets to stdout in .env format"
+    echo -e "\t-k --dotenv-docker (optional) outputs secrets to stdout in a \"docker-friendly\" .env format (no quotes)"
     echo -e "\t-c --copy <destination folder> (optional) copies all attachments on the item to a folder"
     echo ""
     echo "You can use ~/.envwarden to store your credentials (just email, or email:password)"
@@ -35,6 +36,9 @@ while [[ $# > 0 ]]; do
             ;;
         -d | --dotenv)
             DOTENV=true
+            ;;
+        -k | --dotenv-docker)
+            DOTENV_DOCKER=true
             ;;
         -s | --search)
             SEARCH=$2
@@ -72,6 +76,8 @@ while read -r key; do
     read -r value
     if [[ -n "$DOTENV" ]]; then
         echo $key=\"$value\"
+    elif [[ -n "$DOTENV_DOCKER" ]]; then
+        echo $key=$value
     else
         # wrap keys and values in single quotes to avoid further interpolation,
         # plus sanitize for single quote symbols to avoid command injection
