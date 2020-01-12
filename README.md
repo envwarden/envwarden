@@ -82,6 +82,10 @@ docker run -ti -v $HOME/.envwarden:/root/.envwarden envwarden/envwarden
 docker run -ti envwarden/envwarden
 ```
 
+### Importing secrets to Kubernetes
+
+[with just 3 lines of bash](https://blog.gingerlime.com/2019/envwarden-and-kubernetes-secrets/)
+
 ## Notes
 
 `envwarden` is a very simple bash script that wraps around the `bw` CLI. You can inspect it to make sure it's secure and
