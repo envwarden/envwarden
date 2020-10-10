@@ -23,6 +23,7 @@ usage()
     echo -e "\t-d --dotenv (optional) outputs secrets to stdout in .env format"
     echo -e "\t-k --dotenv-docker (optional) outputs secrets to stdout in a \"docker-friendly\" .env format (no quotes)"
     echo -e "\t-c --copy <destination folder> (optional) copies all attachments on the item to a folder"
+    echo -e "\t-g --github envs to github actions"
     echo ""
     echo "You can use ~/.envwarden to store your credentials (just email, or email:password)"
 }
@@ -36,6 +37,9 @@ while [[ $# > 0 ]]; do
             ;;
         -d | --dotenv)
             DOTENV=true
+            ;;
+        -g | --github)
+            GITHUB_ACTIONS=true
             ;;
         -k | --dotenv-docker)
             DOTENV_DOCKER=true
@@ -78,6 +82,9 @@ while read -r key; do
         echo $key=\"$value\"
     elif [[ -n "$DOTENV_DOCKER" ]]; then
         echo $key=$value
+     elif [[ -n "$GITHUB_ACTIONS" ]]; then
+        echo 'echo "::set-output name='$key'::'$value'"'
+        #echo "::set-output name=namespace::production";
     else
         # wrap keys and values in single quotes to avoid further interpolation,
         # plus sanitize for single quote symbols to avoid command injection

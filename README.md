@@ -63,6 +63,7 @@ Options:
     -d --dotenv (optional) outputs to stdout in .env format
     -k --dotenv-docker (optional) outputs secrets to stdout in a "docker-friendly" .env format (no quotes)
     -c --copy <destination folder> (optional) copies all attachments on the item to a folder
+    -g --github envs to github actions compliance
 
 You can use ~/.envwarden to store your credentials (just email, or email:password)
 ```
