@@ -84,7 +84,6 @@ while read -r key; do
         echo $key=$value
      elif [[ -n "$GITHUB_ACTIONS" ]]; then
         echo 'echo "::set-output name='$key'::'$value'"'
-        #echo "::set-output name=namespace::production";
     else
         # wrap keys and values in single quotes to avoid further interpolation,
         # plus sanitize for single quote symbols to avoid command injection
