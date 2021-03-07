@@ -62,14 +62,17 @@ while [[ $# > 0 ]]; do
     shift
 done
 
-if [[ -f $HOME/.envwarden ]]; then
-    IFS=':' read -r bw_login bw_password <<< `cat $HOME/.envwarden`
-else
-    (>&2 echo ".envwarden file not found in $HOME ... prompting for credentials")
+if [ -z "$BW_SESSION" ]; then
+    if [[ -f $HOME/.envwarden ]]; then
+        IFS=':' read -r bw_login bw_password <<< `cat $HOME/.envwarden`
+    else
+        (>&2 echo ".envwarden file not found in $HOME ... prompting for credentials")
+    fi
+
+    bw logout > /dev/null
+    export BW_SESSION="`bw login $bw_login $bw_password --raw`"
 fi
 
-bw logout > /dev/null
-export BW_SESSION="`bw login $bw_login $bw_password --raw`"
 bw sync > /dev/null
 if [[ $? != 0 ]]; then
     (>&2 echo "unable to login or sync with bitwarden.")
