@@ -22,7 +22,7 @@ usage()
     echo -e "\t-s --search <keyword> (optional) define the search term for bitwarden items (defaults to $SEARCH)"
     echo -e "\t-d --dotenv (optional) outputs secrets to stdout in .env format"
     echo -e "\t-k --dotenv-docker (optional) outputs secrets to stdout in a \"docker-friendly\" .env format (no quotes)"
-    echo -e "\t-c --copy <destination folder> (optional) copies all attachments on the item to a folder"
+    echo -e "\t-c --copy <glob> <destination folder> (optional) copies attachments matching glob pattern to a folder"
     echo -e "\t-g --github envs to github actions"
     echo ""
     echo "You can use ~/.envwarden to store your credentials (just email, or email:password)"
@@ -49,8 +49,10 @@ while [[ $# > 0 ]]; do
             shift
             ;;
         -c | --copy)
-            COPY_TO=$2
+            COPY_GLOB=$2
+            COPY_TO=$3
             COPY_TO=${COPY_TO:=.}
+            shift
             shift
             ;;
         *)
@@ -79,29 +81,41 @@ if [[ $? != 0 ]]; then
     exit 1
 fi
 
-while read -r key; do
-    read -r value
-    if [[ -n "$DOTENV" ]]; then
-        echo $key=\"$value\"
-    elif [[ -n "$DOTENV_DOCKER" ]]; then
-        echo $key=$value
-     elif [[ -n "$GITHUB_ACTIONS" ]]; then
-        echo 'echo "::set-output name='$key'::'$value'"'
-    else
-        # wrap keys and values in single quotes to avoid further interpolation,
-        # plus sanitize for single quote symbols to avoid command injection
-        quoted_key="$(echo "$key" | sed "s/'/'\"'\"'/g")"
-        quoted_value="$(echo "$value" | sed "s/'/'\"'\"'/g")"
-        echo export \'$quoted_key\'=\'$quoted_value\'
-    fi
-done < <(bw list items --search "$SEARCH" |jq -r '.[].fields[]? | select(.name != null) | select(.value != null) | .name, .value')
+if [[ -z "$COPY_TO" ]]; then
+  while read -r key; do
+      read -r value
+      if [[ -n "$DOTENV" ]]; then
+          echo $key=\"$value\"
+      elif [[ -n "$DOTENV_DOCKER" ]]; then
+          echo $key=$value
+       elif [[ -n "$GITHUB_ACTIONS" ]]; then
+          echo 'echo "::set-output name='$key'::'$value'"'
+      else
+          # wrap keys and values in single quotes to avoid further interpolation,
+          # plus sanitize for single quote symbols to avoid command injection
+          quoted_key="$(echo "$key" | sed "s/'/'\"'\"'/g")"
+          quoted_value="$(echo "$value" | sed "s/'/'\"'\"'/g")"
+          echo export \'$quoted_key\'=\'$quoted_value\'
+      fi
+  done < <(bw list items --search "$SEARCH" |jq -r '.[].fields[]? | select(.name != null) | select(.value != null) | .name, .value')
+fi
 
 if [[ -n "$COPY_TO" ]]; then
     item_id=$(bw list items --search "$SEARCH" |jq -r '.[].id')
     if [[ -n "$item_id" ]]; then
+        tmp_folder=`mktemp -d`
         while read -r attachment_id; do
             read -r filename
-            bw get attachment $attachment_id --itemid $item_id --output "$COPY_TO/$filename" 1>&2
+            # we want to glob match the $COPY_GLOB, e.g. to be able to specify envwarden -c encrpt*.txt /tmp
+            # and it would download encrypted.txt to /tmp
+            # to make glob matching work, we touch the filename inside a tmp folder and then
+            # test it against the glob. If it matches, we actually get the file, otherwise we skip.
+            touch "$tmp_folder/$filename"
+            if test -n "$(find $tmp_folder -maxdepth 1 -name "$COPY_GLOB" -print -quit)"; then
+              bw get attachment $attachment_id --itemid $item_id --output "$COPY_TO/$filename" 1>&2
+            else
+              (>&2 echo "skipping $filename")
+            fi
         done < <(bw list items --search "$SEARCH" |jq -r '.[].attachments[] | .id, .fileName')
     fi
 fi
