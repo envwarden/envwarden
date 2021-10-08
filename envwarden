@@ -24,6 +24,7 @@ usage()
     echo -e "\t-k --dotenv-docker (optional) outputs secrets to stdout in a \"docker-friendly\" .env format (no quotes)"
     echo -e "\t-c --copy <glob> <destination folder> (optional) copies attachments matching glob pattern to a folder"
     echo -e "\t-g --github envs to github actions"
+    echo -e "\t-ss --skip-sync (optional) skip the vault sync (default will sync on every invocation)"
     echo ""
     echo "You can use ~/.envwarden to store your credentials (email, email:password, or email:password:client_secret)"
     echo "See https://bitwarden.com/help/article/cli-auth-challenges/#get-your-personal-api-key"
@@ -48,6 +49,9 @@ while [[ $# > 0 ]]; do
         -s | --search)
             SEARCH=$2
             shift
+            ;;
+        -ss | --skip-sync)
+            SKIP_SYNC=true
             ;;
         -c | --copy)
             COPY_GLOB=$2
@@ -76,10 +80,12 @@ if [ -z "$BW_SESSION" ]; then
     export BW_SESSION="`BW_CLIENTSECRET=$bw_client_secret bw login $bw_login $bw_password --raw`"
 fi
 
-bw sync > /dev/null
-if [[ $? != 0 ]]; then
-    (>&2 echo "unable to login or sync with bitwarden.")
-    exit 1
+if [[ -z $SKIP_SYNC ]]; then
+    bw sync > /dev/null
+    if [[ $? != 0 ]]; then
+        (>&2 echo "unable to login or sync with bitwarden.")
+        exit 1
+    fi
 fi
 
 if [[ -z "$COPY_TO" ]]; then
