@@ -64,6 +64,7 @@ Options:
     -k --dotenv-docker (optional) outputs secrets to stdout in a "docker-friendly" .env format (no quotes)
     -c --copy <destination folder> (optional) copies all attachments on the item to a folder
     -g --github envs to github actions compliance
+    -ss --skip-sync (optional) skip the vault sync (default will sync on every invocation)
     
 You can use ~/.envwarden to store your credentials (email, email:password, or email:password:client_secret)
 See https://bitwarden.com/help/article/cli-auth-challenges/#get-your-personal-api-key
