@@ -25,7 +25,8 @@ usage()
     echo -e "\t-c --copy <glob> <destination folder> (optional) copies attachments matching glob pattern to a folder"
     echo -e "\t-g --github envs to github actions"
     echo ""
-    echo "You can use ~/.envwarden to store your credentials (just email, or email:password)"
+    echo "You can use ~/.envwarden to store your credentials (email, email:password, or email:password:client_secret)"
+    echo "See https://bitwarden.com/help/article/cli-auth-challenges/#get-your-personal-api-key"
 }
 
 while [[ $# > 0 ]]; do
@@ -66,13 +67,13 @@ done
 
 if [ -z "$BW_SESSION" ]; then
     if [[ -f $HOME/.envwarden ]]; then
-        IFS=':' read -r bw_login bw_password <<< `cat $HOME/.envwarden`
+        IFS=':' read -r bw_login bw_password bw_client_secret <<< `cat $HOME/.envwarden`
     else
         (>&2 echo ".envwarden file not found in $HOME ... prompting for credentials")
     fi
 
     bw logout > /dev/null
-    export BW_SESSION="`bw login $bw_login $bw_password --raw`"
+    export BW_SESSION="`BW_CLIENTSECRET=$bw_client_secret bw login $bw_login $bw_password --raw`"
 fi
 
 bw sync > /dev/null
