@@ -1,3 +1,9 @@
+# 🛑 NO LONGER MAINTAINED
+
+I've decided to stop maintaining envwarden. The [recent changes by Bitwarden](https://github.com/bitwarden/cli/issues/383) made me realize that there are better solutions for managing server secrets. I'm now looking at using [Doppler](https://www.doppler.com), which offers a free plan as well. It's far better suited for server secrets than envwarden. I'm not affiliated with Doppler in any way.
+
+Thanks to everyone who used envwarden and especially to those who contributed to it. It was a fun project to work on, but it's time to say goodbye. 👋
+
 ![](https://raw.githubusercontent.com/envwarden/envwarden/master/assets/icon-left-font-narrow.png "envwarden")
 
 # ${envwarden}
